@@ -196,8 +196,12 @@
             border-radius: 4px;
             padding: 2px 6px;
         }
-        .match-none {
-            color: #999;
+        .match-3 {
+            background-color: #f8d7da; /* 淡淡的粉紅底色 */
+			color: #721c24;            /* 深紅色的文字 */
+            font-weight: bold;
+            border-radius: 4px;
+            padding: 2px 6px;
         }
     </style>
 </head>
@@ -390,8 +394,8 @@
                     matchText = "2 場 ⚡";
                     matchClass = "match-2";
                 } else {
-                    matchText = "不符條件 (差距小於100)";
-                    matchClass = "match-none";
+                    matchText = "3 場 ";
+                    matchClass = "match-3";
                 }
 
                 // 產生表格行
