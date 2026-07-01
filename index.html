@@ -27,9 +27,15 @@
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
             width: 100%;
-            max-width: 500px; /* 查詢表格需要寬一點，調成 500px */
+            max-width: 500px; 
             box-sizing: border-box;
             z-index: 1; 
+            transition: max-width 0.3s ease; /* 讓寬度變大時有平滑動畫 */
+        }
+        
+        /* 當切換到查詢頁面且顯示結果時，將容器放大，防止 6 個欄位擠壓 */
+        .container.wide-mode {
+            max-width: 700px;
         }
         
         /* 頁籤導覽列 (Tabs) */
@@ -154,20 +160,22 @@
             margin: 0;
         }
 
-        /* 查詢表格樣式 */
+        /* 查詢表格外層：支援手機版橫向捲動 */
         .search-section {
             background: #fff;
             padding: 15px;
             border-radius: 8px;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
             margin-top: 15px;
+            overflow-x: auto; 
         }
         
         .result-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 5px;
             font-size: 14px;
+            white-space: nowrap; /* 防止欄位內文字自動換行擠醜 */
         }
         
         .result-table th, .result-table td {
@@ -181,7 +189,7 @@
             color: #333;
         }
 
-        /* 場數標籤顏色增強視覺 */
+        /* 場數標籤顏色 */
         .match-1 {
             background-color: #d4edda;
             color: #155724;
@@ -197,8 +205,8 @@
             padding: 2px 6px;
         }
         .match-3 {
-            background-color: #f8d7da; /* 淡淡的粉紅底色 */
-			color: #721c24;            /* 深紅色的文字 */
+            background-color: #f8d7da; 
+            color: #721c24;            
             font-weight: bold;
             border-radius: 4px;
             padding: 2px 6px;
@@ -207,7 +215,7 @@
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="mainContainer">
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('signin-tab')">📝 簽到系統</button>
         <button class="tab-btn" onclick="switchTab('query-tab')">🔍 羈絆場數查詢</button>
@@ -271,14 +279,16 @@
             <table class="result-table">
                 <thead>
                     <tr>
+                        <th>Line名稱</th>
                         <th>遊戲名稱</th>
+                        <th>ID</th>
                         <th>等級</th>
                         <th>等級差</th>
                         <th>需打場數</th>
                     </tr>
                 </thead>
                 <tbody id="resultBody">
-                    </tbody>
+                </tbody>
             </table>
         </div>
         <div class="message" id="queryMsg" style="color: gray;"></div>
@@ -295,9 +305,17 @@
         
         document.getElementById(tabId).classList.add('active');
         event.currentTarget.classList.add('active');
+
+        // 如果切換回簽到，取消寬版模式
+        if (tabId === 'signin-tab') {
+            document.getElementById('mainContainer').classList.remove('wide-mode');
+        } else if (document.getElementById('queryResultSection').style.display === "block") {
+            // 如果切換到查詢且已經有結果，恢復寬版
+            document.getElementById('mainContainer').classList.add('wide-mode');
+        }
     }
 
-    // 簽到表單提交 (原本的功能)
+    // 簽到表單提交
     document.getElementById('signInForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const submitBtn = document.getElementById('submitBtn');
@@ -352,6 +370,7 @@
         const queryMsg = document.getElementById('queryMsg');
         const resultSection = document.getElementById('queryResultSection');
         const resultBody = document.getElementById('resultBody');
+        const mainContainer = document.getElementById('mainContainer');
 
         if (!myLevelInput) {
             alert("請先輸入你的等級才能查詢唷！");
@@ -361,9 +380,9 @@
         const myLevel = Number(myLevelInput);
         queryMsg.innerText = "正在連線抓取群友名單，請稍候...";
         resultSection.style.display = "none";
+        mainContainer.classList.remove('wide-mode'); // 先重設寬度
         resultBody.innerHTML = "";
 
-        // 發送 GET 請求去撈後台資料
         fetch(GAS_URL)
         .then(response => response.json())
         .then(members => {
@@ -379,14 +398,10 @@
 
             // 2. 巡迴每位成員，計算等級差與場數
             members.forEach(member => {
-                const diff = Math.abs(myLevel - member.level); // 計算絕對值差距
+                const diff = Math.abs(myLevel - member.level); 
                 let matchText = "";
                 let matchClass = "match-none";
 
-                // 計算場數規則：
-                // 相差 325 以上 = 一場
-                // 相差 100 到 325 之間 = 兩場
-                // 相差 100 以下 = 不符條件
                 if (diff >= 325) {
                     matchText = "1 場 ⚔️";
                     matchClass = "match-1";
@@ -394,16 +409,16 @@
                     matchText = "2 場 ⚡";
                     matchClass = "match-2";
                 } else {
-                    matchText = "3 場 ";
+                    matchText = "3 場 🩸";
                     matchClass = "match-3";
                 }
 
-                // 產生表格行
+                // 產生表格行 (💡已修正原代碼 </strong> 的標籤錯誤)
                 const row = `
                     <tr>
-						<td><strong>${member.lineName}</strong></td>
-						<td>${member.gameName}</strong></td>
-                        <td>${member.id}</strong></td>
+                        <td><strong>${member.lineName || '無'}</strong></td>
+                        <td>${member.gameName || '無'}</td>
+                        <td>${member.id || '無'}</td>
                         <td>${member.level} 等</td>
                         <td>${diff}</td>
                         <td><span class="${matchClass}">${matchText}</span></td>
@@ -413,7 +428,7 @@
             });
 
             resultSection.style.display = "block"; // 秀出結果表格
-            //resultSection.removeAttribute("style");      // 確保在所有瀏覽器都正常顯示
+            mainContainer.classList.add('wide-mode'); // 啟用寬版模式，完美容納 6 個欄位
         })
         .catch(error => {
             console.error(error);
