@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遊戲群組簽到表</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eceff1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #666;
+            font-weight: 600;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>ฅ^•ﻌ•^ฅ  貓彈群組簽到系統</h2>
+    <form id="signInForm">
+        <div class="form-group">
+            <label for="gameId">ID(主號)</label>
+            <input type="text" id="gameId" placeholder="請輸入遊戲內ID" required>
+        </div>
+        <div class="form-group">
+            <label for="gameName">遊戲名稱(主號)</label>
+            <input type="text" id="gameName" placeholder="請輸入遊戲暱稱" required>
+        </div>
+        <div class="form-group">
+            <label for="gameLevel">等級(主號)</label>
+            <input type="number" id="gameLevel" placeholder="請輸入目前等級" required>
+        </div>
+        <div class="form-group">
+            <label for="lineName">LINE 名稱</label>
+            <input type="text" id="lineName" placeholder="請輸入LINE上的暱稱" required>
+        </div>
+        <button type="submit" id="submitBtn">提交簽到</button>
+    </form>
+    <div class="message" id="msg"></div>
+</div>
+
+<script>
+    // ⚠️ 請在這裡替換成你從 Google Apps Script 取得的部署網址
+	const GAS_URL = "https://script.google.com/macros/s/AKfycbz9KuDv8ww1suqX4sDvT567VY2mNZ19oHW_Kl9P15bi5wU5cjc4m4ucXjudeBvCJzWp9A/exec";
+
+    document.getElementById('signInForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submitBtn');
+        const msgDiv = document.getElementById('msg');
+        
+        submitBtn.disabled = true;
+        submitBtn.innerText = "傳送中...";
+        msgDiv.innerText = "";
+
+        const payload = {
+            id: document.getElementById('gameId').value,
+            gameName: document.getElementById('gameName').value,
+            level: document.getElementById('gameLevel').value,
+            lineName: document.getElementById('lineName').value
+        };
+
+        // 透過 Fetch API 傳送資料到 Google 試算表後端
+        fetch(GAS_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+		.then(data => {
+			if(data.status === 'success') {
+				msgDiv.style.color = 'green';
+				msgDiv.innerText = '✨ 簽到成功！資料已同步。';
+				document.getElementById('signInForm').reset();
+			} else if(data.status === 'duplicate') {
+				msgDiv.style.color = 'orange';
+				msgDiv.innerText = '⚠️ ' + data.message; // 顯示：此 ID 已經簽到過囉！
+			} else {
+				msgDiv.style.color = 'red';
+				msgDiv.innerText = '❌ 簽到失敗，請稍後再試。';
+			}
+		})
+        .catch(error => {
+            console.error('Error:', error);
+            msgDiv.style.color = 'red';
+            msgDiv.innerText = '❌ 網路連線異常。';
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "提交簽到";
+        });
+    });
+</script>
+
+</body>
+</html>
