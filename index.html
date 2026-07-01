@@ -6,22 +6,46 @@
     <title>ฅ^•ﻌ•^ฅ  貓彈群組簽到表 愛阿凱</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #eceff1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-        }
+            <style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /* --- 🌟 背景圖設定開始 🌟 --- */
+        
+        /* 1. 設定背景圖網址 (將下面的 URL 替換成你想用的圖片連結) */
+        background-image: url('https://i.meee.com.tw/voUo5FA.png');
+        
+        /* 2. 讓背景圖覆蓋整個螢幕 */
+        background-size: cover;
+        
+        /* 3. 讓背景圖固定，不隨捲軸捲動 */
+        background-attachment: fixed;
+        
+        /* 4. 將背景圖置中 */
+        background-position: center;
+        
+        /* 5. 如果圖片沒跑出來，使用一個淡淡的底色 */
+        background-color: #eceff1;
+        
+        /* --- 🌟 背景圖設定結束 🌟 --- */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    
+    /* 為了確保在有背景圖的情況下表單依然清晰，建議將 container 加強陰影 */
+    .container {
+        background: rgba(255, 255, 255, 0.95); /* 加一點點透明度，透出背景 */
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2); /* 增強陰影 */
+        width: 100%;
+        max-width: 400px;
+        z-index: 1; /* 確保表單在背景之上 */
+    }
+    
+	</style>
         h2 {
             text-align: center;
             color: #333;
