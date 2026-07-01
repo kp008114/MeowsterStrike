@@ -3,51 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ฅ^•ﻌ•^ฅ  貓彈群組簽到表</title>
+    <title>ฅ^•ﻌ•^ฅ  貓彈群組工具箱</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* --- 🌟 背景圖設定開始 🌟 --- */
-            
-            /* 使用你專屬的貓咪+寶珠背景圖 */
             background-image: url('https://i.meee.com.tw/voUo5FA.png');
-            
-            /* 讓背景圖覆蓋整個螢幕 */
             background-size: cover;
-            
-            /* 讓背景圖固定，不隨捲軸捲動 */
             background-attachment: fixed;
-            
-            /* 將背景圖置中 */
             background-position: center;
-            
-            /* 如果圖片沒跑出來，使用一個淡淡的底色 */
             background-color: #eceff1;
-            
-            /* --- 🌟 背景圖設定結束 🌟 --- */
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
         
-        /* 表單容器：半透明磨砂玻璃質感 */
         .container {
-            background: rgba(255, 255, 255, 0.92); 
-            padding: 30px;
+            background: rgba(255, 255, 255, 0.93); 
+            padding: 25px;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
             width: 100%;
-            max-width: 400px;
+            max-width: 500px; /* 查詢表格需要寬一點，調成 500px */
             box-sizing: border-box;
             z-index: 1; 
         }
         
-        h2 {
+        /* 頁籤導覽列 (Tabs) */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 20px;
+            gap: 5px;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: rgba(0,0,0,0.05);
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #555;
+            transition: all 0.2s;
+        }
+        
+        .tab-btn.active {
+            background: #ff6b81;
+            color: white;
+        }
+        
+        /* 頁籤內容顯示/隱藏 */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-header {
             text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
             color: #333;
-            margin-bottom: 24px;
+            margin: 0 0 8px 0;
+        }
+        
+        .sub-title {
+            margin: 4px 0;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
         }
         
         .form-group {
@@ -72,14 +106,14 @@
         }
         
         input:focus {
-            border-color: #ff6b81; /* 聚焦時變成可愛的粉妞色系 */
+            border-color: #ff6b81; 
             outline: none;
         }
         
-        button {
+        button.submit-btn {
             width: 100%;
             padding: 12px;
-            background: #ff6b81; /* 改為與粉藍背景較搭配的貓咪粉色 */
+            background: #ff6b81; 
             color: white;
             border: none;
             border-radius: 8px;
@@ -90,7 +124,7 @@
             transition: background 0.2s;
         }
         
-        button:hover {
+        button.submit-btn:hover {
             background: #ee5253;
         }
         
@@ -100,7 +134,6 @@
             font-weight: bold;
         }
         
-        /* 單選鈕排版 */
         .radio-group {
             display: flex;
             gap: 20px;
@@ -120,53 +153,149 @@
             width: auto; 
             margin: 0;
         }
+
+        /* 查詢表格樣式 */
+        .search-section {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+            margin-top: 15px;
+        }
+        
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .result-table th, .result-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .result-table th {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        /* 場數標籤顏色增強視覺 */
+        .match-1 {
+            background-color: #d4edda;
+            color: #155724;
+            font-weight: bold;
+            border-radius: 4px;
+            padding: 2px 6px;
+        }
+        .match-2 {
+            background-color: #fff3cd;
+            color: #856404;
+            font-weight: bold;
+            border-radius: 4px;
+            padding: 2px 6px;
+        }
+        .match-none {
+            color: #999;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>ฅ^•ﻌ•^ฅ  貓彈群組簽到系統<br>❤阿凱愛尤魚🦑</h2>
-    <form id="signInForm">
-        <div class="form-group">
-            <label for="gameId">ID(主號)</label>
-            <input type="text" id="gameId" placeholder="請輸入遊戲內ID" required>
-        </div>
-        <div class="form-group">
-            <label for="gameName">遊戲名稱(主號)</label>
-            <input type="text" id="gameName" placeholder="請輸入遊戲暱稱" required>
-        </div>
-        <div class="form-group">
-            <label for="gameLevel">等級(主號)</label>
-            <input type="number" id="gameLevel" placeholder="請輸入目前等級" required>
-        </div>
-        <div class="form-group">
-            <label for="lineName">LINE 名稱</label>
-            <input type="text" id="lineName" placeholder="請輸入LINE上的暱稱" required>
-        </div>
-        
-        <div class="form-group">
-            <label>是否多帳？</label>
-            <div class="radio-group">
-                <label class="radio-label">
-                    <input type="radio" name="multiAcc" value="是" required> 是
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="multiAcc" value="否" checked required> 否
-                </label>
-            </div>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('signin-tab')">📝 簽到系統</button>
+        <button class="tab-btn" onclick="switchTab('query-tab')">🔍 羈絆場數查詢</button>
+    </div>
+
+    <div id="signin-tab" class="tab-content active">
+        <div class="form-header">
+            <h2>ฅ^•ﻌ•^ฅ  貓彈群組簽到系統 <span style="color: #ff4d6d;">&hearts;</span><br>阿凱愛尤魚 🦑</h2>
+            <p class="sub-title">歡迎來到貓彈群組！請填寫以下資料完成簽到 ✨</p>
+            <p class="sub-title">每人限填一次，若資料有誤請私訊管理員協助修改 🐾</p>
         </div>
 
-        <button type="submit" id="submitBtn">提交簽到</button>
-    </form>
-    <div class="message" id="msg"></div>
+        <form id="signInForm">
+            <div class="form-group">
+                <label for="gameId">ID(主號)</label>
+                <input type="text" id="gameId" placeholder="請輸入遊戲內ID" required>
+            </div>
+            <div class="form-group">
+                <label for="gameName">遊戲名稱(主號)</label>
+                <input type="text" id="gameName" placeholder="請輸入遊戲暱稱" required>
+            </div>
+            <div class="form-group">
+                <label for="gameLevel">等級(主號)</label>
+                <input type="number" id="gameLevel" placeholder="請輸入目前等級" required>
+            </div>
+            <div class="form-group">
+                <label for="lineName">LINE 名稱</label>
+                <input type="text" id="lineName" placeholder="請輸入LINE上的暱稱" required>
+            </div>
+            
+            <div class="form-group">
+                <label>是否多帳？</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="multiAcc" value="是" required> 是
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="multiAcc" value="否" checked required> 否
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">提交簽到</button>
+        </form>
+        <div class="message" id="msg"></div>
+    </div>
+
+    <div id="query-tab" class="tab-content">
+        <div class="form-header">
+            <h2>🔍 羈絆場數快速查詢</h2>
+            <p class="sub-title">輸入你目前的等級，自動計算與已簽到成員的羈絆場數 ⚔️</p>
+        </div>
+
+        <div class="form-group">
+            <label for="myLevel">我的目前等級</label>
+            <input type="number" id="myLevel" placeholder="請輸入你的等級（例如: 500）">
+        </div>
+        <button class="submit-btn" onclick="fetchAndCalculate()">開始查詢場數</button>
+
+        <div id="queryResultSection" class="search-section" style="display: none;">
+            <table class="result-table">
+                <thead>
+                    <tr>
+                        <th>遊戲名稱</th>
+                        <th>等級</th>
+                        <th>等級差</th>
+                        <th>需打場數</th>
+                    </tr>
+                </thead>
+                <tbody id="resultBody">
+                    </tbody>
+            </table>
+        </div>
+        <div class="message" id="queryMsg" style="color: gray;"></div>
+    </div>
 </div>
 
 <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz9KuDv8ww1suqX4sDvT567VY2mNZ19oHW_Kl9P15bi5wU5cjc4m4ucXjudeBvCJzWp9A/exec";
 
+    // 頁籤切換邏輯
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // 簽到表單提交 (原本的功能)
     document.getElementById('signInForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        
         const submitBtn = document.getElementById('submitBtn');
         const msgDiv = document.getElementById('msg');
         
@@ -204,7 +333,6 @@
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             msgDiv.style.color = 'red';
             msgDiv.innerText = '❌ 網路連線異常。';
         })
@@ -213,6 +341,80 @@
             submitBtn.innerText = "提交簽到";
         });
     });
+
+    // 核心邏輯：抓取後端資料並計算羈絆場數
+    function fetchAndCalculate() {
+        const myLevelInput = document.getElementById('myLevel').value;
+        const queryMsg = document.getElementById('queryMsg');
+        const resultSection = document.getElementById('queryResultSection');
+        const resultBody = document.getElementById('resultBody');
+
+        if (!myLevelInput) {
+            alert("請先輸入你的等級才能查詢唷！");
+            return;
+        }
+
+        const myLevel = Number(myLevelInput);
+        queryMsg.innerText = "正在連線抓取群友名單，請稍候...";
+        resultSection.style.display = "none";
+        resultBody.innerHTML = "";
+
+        // 發送 GET 請求去撈後台資料
+        fetch(GAS_URL)
+        .then(response => response.json())
+        .then(members => {
+            if (members.length === 0) {
+                queryMsg.innerText = "目前資料庫中還沒有任何人簽到。";
+                return;
+            }
+
+            queryMsg.innerText = "";
+
+            // 1. 依照「等級 (level)」由高到低進行排序 (降序)
+            members.sort((a, b) => b.level - a.level);
+
+            // 2. 巡迴每位成員，計算等級差與場數
+            members.forEach(member => {
+                const diff = Math.abs(myLevel - member.level); // 計算絕對值差距
+                let matchText = "";
+                let matchClass = "match-none";
+
+                // 計算場數規則：
+                // 相差 325 以上 = 一場
+                // 相差 100 到 325 之間 = 兩場
+                // 相差 100 以下 = 不符條件
+                if (diff >= 325) {
+                    matchText = "1 場 ⚔️";
+                    matchClass = "match-1";
+                } else if (diff >= 100 && diff < 325) {
+                    matchText = "2 場 ⚡";
+                    matchClass = "match-2";
+                } else {
+                    matchText = "不符條件 (差距小於100)";
+                    matchClass = "match-none";
+                }
+
+                // 產生表格行
+                const row = `
+                    <tr>
+                        <td><strong>${member.gameName}</strong></td>
+                        <td>${member.level} 等</td>
+                        <td>${diff}</td>
+                        <td><span class="${matchClass}">${matchText}</span></td>
+                    </tr>
+                `;
+                resultBody.innerHTML += row;
+            });
+
+            resultSection.style.style.display = "block"; // 秀出結果表格
+            resultSection.removeAttribute("style");      // 確保在所有瀏覽器都正常顯示
+        })
+        .catch(error => {
+            console.error(error);
+            queryMsg.style.color = "red";
+            queryMsg.innerText = "❌ 無法取得名單，請確認網路連線或 GAS 部署設定。";
+        });
+    }
 </script>
 
 </body>
