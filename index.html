@@ -181,7 +181,7 @@
             font-weight: 600;
         }
         
-        input[type="password"] {
+        input[type="text"], input[type="password"] {
             width: 100%;
             padding: 11px;
             border: 1px solid #ccc;
@@ -246,12 +246,11 @@
     <div class="modal-box">
         <h3 id="modalTitle">驗證身分</h3>
         <form id="verifyForm">
-            <!-- 1. LINE 名稱輸入框：把 type 改回 text（字才看得到），並給它獨立的 id -->
             <div class="form-group">
                 <label>請輸入你的 LINE 名稱</label>
-                <input type="text" id="verifyLineName" placeholder="請精準輸入你的 LINE 暱稱" required>
+                <!-- 這裡的 placeholder 在打開時會被 JS 自動換成該使用者的名字 -->
+                <input type="text" id="verifyLineName" placeholder="" required>
             </div>
-            <!-- 2. 驗證碼輸入框：保持密碼隱碼狀態 -->
             <div class="form-group">
                 <label>請輸入專屬簽到驗證碼</label>
                 <input type="password" id="verifyCode" placeholder="請輸入 6 碼簽到驗證碼" maxlength="6" required>
@@ -320,10 +319,17 @@
     }
 
     function openModal() {
-        if(!selectedUser) return;
-        document.getElementById('modalTitle').innerText = `🎯 驗證：${selectedUser}`;
-        document.getElementById('verifyModal').classList.add('open');
-    }
+		if(!selectedUser) return;
+		
+		// 1. 修改標題
+		document.getElementById('modalTitle').innerText = `🎯 驗證：${selectedUser}`;
+		
+		// 2. ✨ 動態修改 LINE 名稱輸入框的提示文字 (Placeholder)
+		document.getElementById('verifyLineName').placeholder = `請輸入 ${selectedUser}`;
+		
+		// 3. 打開視窗
+		document.getElementById('verifyModal').classList.add('open');
+	}
 
     function closeModal() {
         document.getElementById('verifyModal').classList.remove('open');
