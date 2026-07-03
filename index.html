@@ -246,6 +246,12 @@
     <div class="modal-box">
         <h3 id="modalTitle">驗證身分</h3>
         <form id="verifyForm">
+            <!-- 1. LINE 名稱輸入框：把 type 改回 text（字才看得到），並給它獨立的 id -->
+            <div class="form-group">
+                <label>請輸入你的 LINE 名稱</label>
+                <input type="text" id="verifyLineName" placeholder="請精準輸入你的 LINE 暱稱" required>
+            </div>
+            <!-- 2. 驗證碼輸入框：保持密碼隱碼狀態 -->
             <div class="form-group">
                 <label>請輸入專屬簽到驗證碼</label>
                 <input type="password" id="verifyCode" placeholder="請輸入 6 碼簽到驗證碼" maxlength="6" required>
@@ -335,9 +341,10 @@
         modalMsg.innerText = "";
 
         const payload = {
-            lineName: selectedUser,
-            code: document.getElementById('verifyCode').value.trim()
-        };
+			selectedName: selectedUser, // 網頁畫面上群友勾選的名字
+			lineName: document.getElementById('verifyLineName').value.trim(), // 彈出視窗手動輸入的名字
+			code: document.getElementById('verifyCode').value.trim() // 彈出視窗輸入的驗證碼
+		};
 
         fetch(GAS_URL, {
             method: 'POST',
